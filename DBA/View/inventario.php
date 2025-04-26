@@ -16,7 +16,7 @@ $productoModel = new InventarioModel();
     <div id="content-wrapper" class="d-flex flex-column">
         <div id="content">
             <div class="container-fluid">
-                <h5>Consulta de Productos</h5>
+                <h5>Consulta de Inventarios</h5>
                 <table id="example" class="table">
                     <thead>
                         <tr>
