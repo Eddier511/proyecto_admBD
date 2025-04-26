@@ -32,7 +32,6 @@ $productoModel = new ProductoModel();
                             <th>Producto</th>
                             <th>Precio</th>
                             <th>Stock</th>
-                            <th>Acción</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -48,13 +47,6 @@ $productoModel = new ProductoModel();
                                 echo "<td>" . htmlspecialchars($row['NOMBRE']) . "</td>";
                                 echo "<td>$ " . number_format($row['PRECIO'], 2) . "</td>";
                                 echo "<td>" . htmlspecialchars($row['STOCK']) . "</td>";
-                                echo "<td>
-                                <a href='eliminarProducto.php?id=" . htmlspecialchars($row['ID_PRODUCTO']) . "' 
-                                   class='btn-eliminar' 
-                                   onclick='return confirm(\"¿Estás seguro de eliminar este producto?\");'>
-                                   <i class='fa fa-trash text-danger'></i>
-                                </a>
-                            </td>";
                             echo "</tr>";
                             }
                             
