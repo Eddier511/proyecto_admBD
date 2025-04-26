@@ -1,5 +1,5 @@
 <?php
-require_once(__DIR__ . '/../Model/ReservaModel.php');
+require_once(__DIR__ . '/../Model/ProductoModel.php');
 
 class ReservaController {
     private $reservaModel;
@@ -108,7 +108,7 @@ class ReservaController {
 
         $this->validarFechas($data['fecha_entrada'], $data['fecha_salida']);
 
-        if (!is_numeric($data['id_cliente']) {
+        if (!is_numeric($data['id_cliente'])) {
             throw new Exception("ID de cliente no válido");
         }
 

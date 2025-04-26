@@ -1,8 +1,8 @@
 <?php
 function AbrirBaseDatos()
 {
-    $usuario = 'desarrollo_user';
-    $contrasena = 'desarrollo_user';
+    $usuario = 'usuario_consulta';
+    $contrasena = 'Usuario123';
     $conexion = oci_connect($usuario, $contrasena, 'localhost/XE'); // XE es el nombre por defecto de la base Oracle Express
 
     if (!$conexion) {
