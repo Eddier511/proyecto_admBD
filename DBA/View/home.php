@@ -10,7 +10,6 @@
         <h1>Bienvenido al Super Naomy</h1>
         <p>Usa el menú de navegación para registrar o consultar los Productos.</p>
     </div>
-
     <?php PrintFooter(); ?>
     <?php PrintScript(); ?>
 </body>
