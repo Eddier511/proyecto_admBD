@@ -7,8 +7,8 @@
     <?php BarraNavegacion(); ?>
 
     <div class="container mt-5">
-        <h1>Bienvenido al Sistema de Reservas de Hotel</h1>
-        <p>Usa el menú de navegación para registrar o consultar reservas.</p>
+        <h1>Bienvenido al Super Naomy</h1>
+        <p>Usa el menú de navegación para registrar o consultar los Productos.</p>
     </div>
 
     <?php PrintFooter(); ?>

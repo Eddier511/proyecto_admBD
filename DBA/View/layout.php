@@ -4,7 +4,7 @@ function PrintCss()
     echo '<head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>Reserva Hotel</title>
+        <title>Super Naomy</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
         <link href="../View/Styles/estilos.css" rel="stylesheet">
@@ -13,14 +13,15 @@ function PrintCss()
 
 function BarraNavegacion()
 {
-    echo '<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
-            <a class="navbar-brand" href="../View/home.php">Reserva Hotel</a>
+    echo '<nav class="navbar navbar-expand-lg navbar-dark bg-success px-4">
+            <a class="navbar-brand" href="../View/home.php">Super Naomy</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link" href="../View/registro.php">Registrar Reserva</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../View/registro.php">Registrar Productos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../View/consulta.php">Consultar Productos</a></li>
 
                 </ul>
             </div>
@@ -29,9 +30,9 @@ function BarraNavegacion()
 
 function PrintFooter()
 {
-    echo '<footer class="bg-light text-center text-muted py-3">
-            <div class="container">
-                <small>&copy; ' . date("Y") . ' Sistema de Reservas</small>
+    echo '<footer class="bg-dark text-white text-center text-white py-3">
+            <div class="container white">
+                <small>&copy; ' . date("Y") . ' Super Naomy</small>
             </div>
           </footer>';
 }
