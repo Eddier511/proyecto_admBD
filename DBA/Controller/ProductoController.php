@@ -1,25 +1,25 @@
 <?php
 require_once(__DIR__ . '/../Model/ProductoModel.php');
 
-class ReservaController {
-    private $reservaModel;
+class ProductoController {
+    private $productoModel;
 
     public function __construct() {
-        $this->reservaModel = new ReservaModel();
+        $this->productoModel = new ProductoModel();
     }
 
     /**
-     * Maneja las solicitudes POST para crear reservas o consultar disponibilidad
+     * Maneja las solicitudes POST para crear productos o consultar productos
      */
     public function handleRequest() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (isset($_POST['action'])) {
                 switch ($_POST['action']) {
-                    case 'consultar_disponibilidad':
-                        $this->consultarDisponibilidad();
+                    case 'consultar_producto':
+                        $this->consultarProducto();
                         break;
-                    case 'crear_reserva':
-                        $this->crearReserva();
+                    case 'crear_producto':
+                        $this->crearProducto();
                         break;
                     default:
                         $this->responderError("Acción no válida");
@@ -33,26 +33,27 @@ class ReservaController {
     }
 
     /**
-     * Consulta habitaciones disponibles para las fechas especificadas
+     * Consulta productos disponibles
      */
-    private function consultarDisponibilidad() {
+    private function consultarProducto() {
         try {
-            // Validar datos de entrada
-            $this->validarFechas($_POST['fecha_entrada'], $_POST['fecha_salida']);
-
-            // Obtener habitaciones disponibles
-            $habitaciones = $this->reservaModel->obtenerHabitacionesDisponibles(
-                $_POST['fecha_entrada'],
-                $_POST['fecha_salida']
-            );
-
-            // Preparar respuesta
-            $response = [
-                'success' => true,
-                'habitaciones' => $habitaciones,
-                'fecha_entrada' => $_POST['fecha_entrada'],
-                'fecha_salida' => $_POST['fecha_salida']
-            ];
+            if (isset($_POST['id_producto']) && !empty($_POST['id_producto'])) {
+                $producto = $this->productoModel->obtenerProductoPorId($_POST['id_producto']);
+                if ($producto) {
+                    $response = [
+                        'success' => true,
+                        'producto' => $producto
+                    ];
+                } else {
+                    throw new Exception("Producto no encontrado");
+                }
+            } else {
+                $productos = $this->productoModel->obtenerTodosLosProductos();
+                $response = [
+                    'success' => true,
+                    'productos' => $productos
+                ];
+            }
 
             header('Content-Type: application/json');
             echo json_encode($response);
@@ -63,28 +64,28 @@ class ReservaController {
     }
 
     /**
-     * Crea una nueva reserva
+     * Crea un nuevo producto
      */
-    private function crearReserva() {
+    private function crearProducto() {
         try {
             // Validar datos de entrada
-            $this->validarDatosReserva($_POST);
+            $this->validarDatosProducto($_POST);
 
-            // Crear la reserva
-            $idReserva = $this->reservaModel->crearReserva(
-                $_POST['id_cliente'],
-                $_POST['id_habitacion'],
-                $_POST['fecha_entrada'],
-                $_POST['fecha_salida'],
-                $_POST['tipo_pago']
+            // Crear el producto
+            $idProducto = $this->productoModel->crearProducto(
+                $_POST['id_producto'],
+                $_POST['id_categoria'],
+                $_POST['nombre'],
+                $_POST['precio'],
+                $_POST['stock']
             );
 
             // Preparar respuesta exitosa
             $response = [
                 'success' => true,
-                'message' => 'Reserva creada exitosamente',
-                'id_reserva' => $idReserva,
-                'redirect' => 'exito.php?id=' . $idReserva
+                'message' => 'Producto creado exitosamente',
+                'id_producto' => $idProducto,
+                'redirect' => 'exito_producto.php?id=' . $idProducto
             ];
 
             header('Content-Type: application/json');
@@ -96,37 +97,22 @@ class ReservaController {
     }
 
     /**
-     * Valida los datos básicos de una reserva
+     * Valida los datos básicos de un producto
      */
-    private function validarDatosReserva($data) {
-        $required = ['id_cliente', 'id_habitacion', 'fecha_entrada', 'fecha_salida', 'tipo_pago'];
+    private function validarDatosProducto($data) {
+        $required = ['id_producto', 'id_categoria', 'nombre', 'precio', 'stock'];
         foreach ($required as $field) {
             if (empty($data[$field])) {
                 throw new Exception("El campo $field es requerido");
             }
         }
 
-        $this->validarFechas($data['fecha_entrada'], $data['fecha_salida']);
-
-        if (!is_numeric($data['id_cliente'])) {
-            throw new Exception("ID de cliente no válido");
+        if (!is_numeric($data['precio'])) {
+            throw new Exception("El precio debe ser un número válido");
         }
 
-        if (!is_numeric($data['id_habitacion'])) {
-            throw new Exception("ID de habitación no válido");
-        }
-    }
-
-    /**
-     * Valida que las fechas sean correctas
-     */
-    private function validarFechas($fechaEntrada, $fechaSalida) {
-        if (strtotime($fechaSalida) <= strtotime($fechaEntrada)) {
-            throw new Exception("La fecha de salida debe ser posterior a la fecha de entrada");
-        }
-
-        if (strtotime($fechaEntrada) < strtotime(date('Y-m-d'))) {
-            throw new Exception("No se pueden hacer reservas con fechas pasadas");
+        if (!is_numeric($data['stock'])) {
+            throw new Exception("El stock debe ser un número válido");
         }
     }
 
@@ -145,6 +131,6 @@ class ReservaController {
 }
 
 // Uso del controlador
-$controller = new ReservaController();
+$controller = new ProductoController();
 $controller->handleRequest();
 ?>
