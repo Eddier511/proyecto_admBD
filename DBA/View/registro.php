@@ -2,9 +2,9 @@
 require_once("../View/layout.php");
 require_once(__DIR__ . '/../Model/ProductoModel.php');
 
-$reservaModel = new ReservaModel();
+$productoModel = new ProductoModel(); 
 $mensajeError = '';
-$habitaciones = [];
+$productos = [];
 
 // Procesar consulta de disponibilidad
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['consultar_disponibilidad'])) {
@@ -18,14 +18,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['consultar_disponibilid
             throw new Exception("La fecha de salida debe ser posterior a la entrada");
         }
         
-        $habitaciones = $reservaModel->obtenerHabitacionesDisponibles(
+        $productos = $productoModel->obtenerProductosDisponibles(
             $_POST['fecha_entrada'],
             $_POST['fecha_salida']
         );
         
-        if (empty($habitaciones)) {
-            $mensajeError = "No hay habitaciones disponibles para las fechas seleccionadas";
+        if (empty($productos)) {
+            $mensajeError = "No hay productos disponibles para las fechas seleccionadas.";
         }
+    } catch (Exception $e) {
+        $mensajeError = $e->getMessage();
+    }
+}
+
+// Procesar creación de reserva de producto
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['reservar'])) {
+    try {
+        if (empty($_POST['id_cliente']) || empty($_POST['id_producto']) || empty($_POST['tipo_pago'])) {
+            throw new Exception("Todos los campos son requeridos para realizar la compra.");
+        }
+        
+        $productoModel->crearReservaProducto(
+            $_POST['id_cliente'],
+            $_POST['id_producto'],
+            $_POST['fecha_entrada'],
+            $_POST['fecha_salida'],
+            $_POST['tipo_pago']
+        );
+
+        header('Location: /ruta-confirmacion.php'); // Cambia esta ruta si quieres
+        exit;
+        
     } catch (Exception $e) {
         $mensajeError = $e->getMessage();
     }
@@ -40,13 +63,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['consultar_disponibilid
     <?php BarraNavegacion(); ?>
 
     <div class="container mt-5">
-        <h2 class="mb-4">Formulario de Reserva</h2>
+        <h2 class="mb-4">Formulario de Compra de Productos</h2>
         
         <?php if ($mensajeError): ?>
             <div class="alert alert-danger"><?= htmlspecialchars($mensajeError) ?></div>
         <?php endif; ?>
         
-        <form id="formReserva" method="post" class="bg-light p-4 shadow rounded">
+        <form id="formProducto" method="post" class="bg-light p-4 shadow rounded">
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
@@ -57,33 +80,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['consultar_disponibilid
                     </div>
                     
                     <div class="mb-3">
-                        <label for="fecha_entrada" class="form-label">Fecha de Entrada</label>
+                        <label for="fecha_entrada" class="form-label">Fecha de Pedido</label>
                         <input type="date" id="fecha_entrada" name="fecha_entrada" class="form-control" required
                                value="<?= htmlspecialchars($_POST['fecha_entrada'] ?? '') ?>">
                     </div>
                     
                     <div class="mb-3">
-                        <label for="fecha_salida" class="form-label">Fecha de Salida</label>
+                        <label for="fecha_salida" class="form-label">Fecha de Entrega</label>
                         <input type="date" id="fecha_salida" name="fecha_salida" class="form-control" required
                                value="<?= htmlspecialchars($_POST['fecha_salida'] ?? '') ?>">
                     </div>
                     
                     <button type="submit" name="consultar_disponibilidad" value="1" 
                             class="btn btn-info mb-3" data-action="consultar_disponibilidad">
-                        Consultar Disponibilidad
+                        Consultar Productos Disponibles
                     </button>
                 </div>
                 
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="id_habitacion" class="form-label">Habitación Disponible</label>
-                        <select id="id_habitacion" name="id_habitacion" class="form-select" required
-                                <?= empty($habitaciones) ? 'disabled' : '' ?>>
-                            <option value=""><?= empty($habitaciones) ? 'Seleccione fechas primero' : 'Seleccione habitación' ?></option>
-                            <?php foreach ($habitaciones as $hab): ?>
-                                <option value="<?= $hab['ID_HABITACION'] ?>">
-                                    Hab. <?= $hab['ID_HABITACION'] ?> - <?= $hab['TIPO'] ?> 
-                                    ($<?= number_format($hab['PRECIO_NOCHE'], 2) ?>/noche)
+                        <label for="id_producto" class="form-label">Producto Disponible</label>
+                        <select id="id_producto" name="id_producto" class="form-select" required
+                                <?= empty($productos) ? 'disabled' : '' ?>>
+                            <option value=""><?= empty($productos) ? 'Seleccione fechas primero' : 'Seleccione un producto' ?></option>
+                            <?php foreach ($productos as $prod): ?>
+                                <option value="<?= $prod['ID_PRODUCTO'] ?>">
+                                    <?= $prod['NOMBRE'] ?> - $<?= number_format($prod['PRECIO'], 2) ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
@@ -101,8 +123,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['consultar_disponibilid
                     
                     <button type="submit" class="btn btn-primary w-100" 
                             name="reservar" data-action="crear_reserva"
-                            <?= empty($habitaciones) ? 'disabled' : '' ?>>
-                        Confirmar Reserva
+                            <?= empty($productos) ? 'disabled' : '' ?>>
+                        Confirmar Compra
                     </button>
                 </div>
             </div>

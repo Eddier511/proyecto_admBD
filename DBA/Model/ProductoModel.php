@@ -4,7 +4,7 @@ require_once(__DIR__ . '/BaseDatosModel.php');
 class ProductoModel {
 
     /**
-     * Obtiene todos los productos o un producto específico si se pasa el ID
+     * Obtiene todos los productos
      */
     public function obtenerTodosLosProductos() {
         $conn = AbrirBaseDatos();
@@ -20,12 +20,10 @@ class ProductoModel {
 
             $stmt = oci_parse($conn, $sql);
 
-            // Bind de parámetros de salida
             $cursor = oci_new_cursor($conn);
             oci_bind_by_name($stmt, ':cursor_productos', $cursor, -1, OCI_B_CURSOR);
             oci_bind_by_name($stmt, ':mensaje_error', $mensajeError, 2000);
 
-            // Ejecutar
             if (!oci_execute($stmt)) {
                 throw new Exception("Error al ejecutar procedimiento");
             }
@@ -66,7 +64,6 @@ class ProductoModel {
 
             $stmt = oci_parse($conn, $sql);
 
-            // Bind de parámetros
             oci_bind_by_name($stmt, ':p_id_producto', $idProducto, 50);
             $cursor = oci_new_cursor($conn);
             oci_bind_by_name($stmt, ':cursor_producto', $cursor, -1, OCI_B_CURSOR);
@@ -113,7 +110,6 @@ class ProductoModel {
 
             $stmt = oci_parse($conn, $sql);
 
-            // Bind de parámetros
             oci_bind_by_name($stmt, ':p_id_producto', $idProducto, 50);
             oci_bind_by_name($stmt, ':p_id_categoria', $idCategoria, 50);
             oci_bind_by_name($stmt, ':p_nombre', $nombre, 100);
@@ -130,6 +126,62 @@ class ProductoModel {
             }
 
             return $idProducto;
+
+        } finally {
+            if (isset($stmt)) oci_free_statement($stmt);
+            CerrarBaseDatos($conn);
+        }
+    }
+
+    /**
+     * Obtiene productos disponibles para compra
+     */
+    public function obtenerProductosDisponibles($fechaEntrada, $fechaSalida) {
+        $conn = AbrirBaseDatos();
+        $productos = array();
+
+        try {
+            $sql = "SELECT * FROM productos WHERE DISPONIBLE = 1";
+
+            $stmt = oci_parse($conn, $sql);
+
+            if (!oci_execute($stmt)) {
+                throw new Exception("Error al consultar productos disponibles");
+            }
+
+            while ($producto = oci_fetch_assoc($stmt)) {
+                $productos[] = $producto;
+            }
+
+            return $productos;
+
+        } finally {
+            if (isset($stmt)) oci_free_statement($stmt);
+            CerrarBaseDatos($conn);
+        }
+    }
+
+    /**
+     * Crea una "reserva" de un producto (compra)
+     */
+    public function crearReservaProducto($idCliente, $idProducto, $fechaEntrada, $fechaSalida, $tipoPago) {
+        $conn = AbrirBaseDatos();
+
+        try {
+            $sql = "INSERT INTO reservas_productos (ID_CLIENTE, ID_PRODUCTO, FECHA_PEDIDO, FECHA_ENTREGA, TIPO_PAGO)
+                    VALUES (:idCliente, :idProducto, TO_DATE(:fechaEntrada, 'YYYY-MM-DD'), TO_DATE(:fechaSalida, 'YYYY-MM-DD'), :tipoPago)";
+
+            $stmt = oci_parse($conn, $sql);
+
+            oci_bind_by_name($stmt, ':idCliente', $idCliente);
+            oci_bind_by_name($stmt, ':idProducto', $idProducto);
+            oci_bind_by_name($stmt, ':fechaEntrada', $fechaEntrada);
+            oci_bind_by_name($stmt, ':fechaSalida', $fechaSalida);
+            oci_bind_by_name($stmt, ':tipoPago', $tipoPago);
+
+            if (!oci_execute($stmt)) {
+                throw new Exception("Error al insertar la reserva de producto");
+            }
 
         } finally {
             if (isset($stmt)) oci_free_statement($stmt);
