@@ -20,9 +20,7 @@ function BarraNavegacion()
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link" href="../View/registro.php">Registrar Productos</a></li>
-                    <li class="nav-item"><a class="nav-link" href="../View/consulta.php">Consultar Productos</a></li>
-
+                    <li class="nav-item"><a class="nav-link" href="../View/producto.php">Productos</a></li>
                 </ul>
             </div>
         </nav>';

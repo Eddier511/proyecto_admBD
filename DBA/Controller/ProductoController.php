@@ -8,58 +8,11 @@ class ProductoController {
         $this->productoModel = new ProductoModel();
     }
 
-    /**
-     * Maneja las solicitudes POST para crear productos o consultar productos
-     */
-    public function handleRequest() {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            if (isset($_POST['action'])) {
-                switch ($_POST['action']) {
-                    case 'consultar_producto':
-                        $this->consultarProducto();
-                        break;
-                    case 'crear_producto':
-                        $this->crearProducto();
-                        break;
-                    default:
-                        $this->responderError("Acción no válida");
-                }
-            } else {
-                $this->responderError("Parámetro 'action' no especificado");
-            }
-        } else {
-            $this->responderError("Método no permitido", 405);
-        }
-    }
-
-    /**
-     * Consulta productos disponibles
-     */
-    private function consultarProducto() {
+    public function mostrarTodosProductos() {
         try {
-            if (isset($_POST['id_producto']) && !empty($_POST['id_producto'])) {
-                $producto = $this->productoModel->obtenerProductoPorId($_POST['id_producto']);
-                if ($producto) {
-                    $response = [
-                        'success' => true,
-                        'producto' => $producto
-                    ];
-                } else {
-                    throw new Exception("Producto no encontrado");
-                }
-            } else {
-                $productos = $this->productoModel->obtenerTodosLosProductos();
-                $response = [
-                    'success' => true,
-                    'productos' => $productos
-                ];
-            }
-
-            header('Content-Type: application/json');
-            echo json_encode($response);
-
+            return $this->model->consultarTodosProductos();
         } catch (Exception $e) {
-            $this->responderError($e->getMessage());
+            throw new Exception("Error en ProductoController: " . $e->getMessage());
         }
     }
 

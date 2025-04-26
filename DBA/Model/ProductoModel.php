@@ -2,54 +2,38 @@
 require_once(__DIR__ . '/BaseDatosModel.php');
 
 class ProductoModel {
+    
+    private $db;
 
-    /**
-     * Obtiene todos los productos
-     */
-    public function obtenerTodosLosProductos() {
-        $conn = AbrirBaseDatos();
-        $productos = array();
-
-        try {
-            $sql = "BEGIN
-                        operaciones_tablas.sp_obtener_productos(
-                            :cursor_productos,
-                            :mensaje_error
-                        );
-                    END;";
-
-            $stmt = oci_parse($conn, $sql);
-
-            $cursor = oci_new_cursor($conn);
-            oci_bind_by_name($stmt, ':cursor_productos', $cursor, -1, OCI_B_CURSOR);
-            oci_bind_by_name($stmt, ':mensaje_error', $mensajeError, 2000);
-
-            if (!oci_execute($stmt)) {
-                throw new Exception("Error al ejecutar procedimiento");
-            }
-
-            if (!empty($mensajeError)) {
-                throw new Exception($mensajeError);
-            }
-
-            oci_execute($cursor);
-
-            while ($producto = oci_fetch_assoc($cursor)) {
-                $productos[] = $producto;
-            }
-
-            return $productos;
-
-        } finally {
-            if (isset($cursor)) oci_free_statement($cursor);
-            if (isset($stmt)) oci_free_statement($stmt);
-            CerrarBaseDatos($conn);
-        }
+    public function __construct() {
+        $this->db = AbrirBaseDatos();
     }
 
-    /**
-     * Obtiene un producto por ID
-     */
+    public function __destruct() {
+        CerrarBaseDatos($this->db);
+    }
+
+    public function consultarTodosProductos() {
+        $query = "BEGIN ADMIN_FACTURACION.PRODUCTOS_CONSULTAR_PRODUCTOS_SP(:result); END;";
+        
+        $stmt = oci_parse($this->db, $query);
+        $result = oci_new_cursor($this->db);
+        
+        oci_bind_by_name($stmt, ":result", $result, -1, OCI_B_CURSOR);
+        
+        if (!oci_execute($stmt)) {
+            $e = oci_error($stmt);
+            throw new Exception("Error al ejecutar procedimiento: " . $e['message']);
+        }
+        
+        if (!oci_execute($result)) {
+            $e = oci_error($result);
+            throw new Exception("Error al ejecutar cursor: " . $e['message']);
+        }
+        
+        return $result;
+    }
+
     public function obtenerProductoPorId($idProducto) {
         $conn = AbrirBaseDatos();
 
