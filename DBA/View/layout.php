@@ -21,7 +21,9 @@ function BarraNavegacion()
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item"><a class="nav-link" href="../View/producto.php">Productos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="../View/inventario.php">Inventario</a></li>
                     <li class="nav-item"><a class="nav-link" href="../View/reportes.php">Reportes</a></li>
+
 
                 </ul>
             </div>

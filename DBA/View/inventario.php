@@ -1,9 +1,9 @@
 <?php 
 require_once("../View/layout.php");
-require_once(__DIR__ . '/../Model/ProductoModel.php');
+require_once(__DIR__ . '/../Model/InventarioModel.php');
 
 // Crear instancia del modelo
-$productoModel = new ProductoModel();
+$productoModel = new InventarioModel();
 ?>
 
 <!DOCTYPE html>
@@ -21,25 +21,25 @@ $productoModel = new ProductoModel();
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Categoria</th>
                             <th>Producto</th>
-                            <th>Precio</th>
-                            <th>Stock</th>
+                            <th>Tienda</th>
+                            <th>Cantidad</th>
+                            <th>Fecha</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
                         try {
                             // Obtener los datos usando el modelo
-                            $cursor = $productoModel->consultarTodosProductos();
+                            $cursor = $productoModel->consultarInventarios();
                             
                             while ($row = oci_fetch_assoc($cursor)) {
                                 echo "<tr>";
-                                echo "<td>" . htmlspecialchars($row['ID_PRODUCTO']) . "</td>";
-                                echo "<td>" . htmlspecialchars(mb_convert_encoding($row['NOMBRE_CATEGORIA'], 'UTF-8', 'UTF-8')) . "</td>";
-                                echo "<td>" . htmlspecialchars($row['NOMBRE']) . "</td>";
-                                echo "<td>$ " . number_format($row['PRECIO'], 2) . "</td>";
-                                echo "<td>" . htmlspecialchars($row['STOCK']) . "</td>";
+                                echo "<td>" . htmlspecialchars($row['ID_INVENTARIO']) . "</td>";
+                                echo "<td>" . htmlspecialchars(mb_convert_encoding($row['NOMBRE'], 'UTF-8', 'UTF-8')) . "</td>";
+                                echo "<td>" . htmlspecialchars($row['NOMBRE_TIENDA']) . "</td>";
+                                echo "<td>" . htmlspecialchars($row['CANTIDAD'], 2) . "</td>";
+                                echo "<td>" . htmlspecialchars($row['FECHA_ACTUALIZACION']) . "</td>";
                             echo "</tr>";
                             }
                             
