@@ -27,7 +27,7 @@
         }
         .home {
             position: relative;
-            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('../img/bgHome.jpg') center/cover no-repeat;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('../DBA/img/bgHome.jpg') center/cover no-repeat;
             height: 100vh;
             display: flex;
             justify-content: center;
@@ -63,7 +63,7 @@
             <p class="animate__animated animate__fadeInUp animate__delay-1s">Ingrese para realizar sus consultas</p>
 
             <div class="pt-3">
-                <a href="home.php" class="animate__animated animate__bounceIn animate__delay-2s">Iniciar</a>
+                <a href="../DBA/View/home.php" class="animate__animated animate__bounceIn animate__delay-2s">Iniciar</a>
             </div>
         </div>
     </section>
